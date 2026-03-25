@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MovieBooking.Application.Common.Responses;
 using MovieBooking.Application.DTOs.Auth;
 using MovieBooking.Application.Features.Auth.Commands;
 
@@ -30,12 +31,12 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Login(LoginDto dto)
     {
         var command = new LoginUserCommand(dto.Email, dto.Password);
-        var token = await _mediator.Send(command);
+        var response = await _mediator.Send(command);
 
-        return Ok(new { token });
+        return Ok(ApiResponse<AuthResponseDto>.SuccessResponse(response, "Login successful"));
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpGet("me")]
     public IActionResult GetProfile()
     {

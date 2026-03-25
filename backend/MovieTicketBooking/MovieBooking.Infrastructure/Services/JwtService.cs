@@ -4,6 +4,8 @@ using System.Security.Claims;
 using System.Text;
 using MovieBooking.Application.Interfaces;
 using Microsoft.Extensions.Configuration;
+using System.Security.Cryptography;
+
 
 namespace MovieBooking.Infrastructure.Services;
 
@@ -17,12 +19,13 @@ public class JwtService : IJwtService
         _key = configuration["Jwt:Key"];
     }
 
-    public string GenerateToken(Guid userId, string email)
+    public string GenerateToken(Guid userId, string email, string role)
     {
         var claims = new[]
         {
             new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
-            new Claim(ClaimTypes.Email, email)
+            new Claim(ClaimTypes.Email, email),
+            new Claim(ClaimTypes.Role, role)
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_key));
@@ -34,5 +37,10 @@ public class JwtService : IJwtService
             signingCredentials: creds);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public string GenerateRefreshToken()
+    {
+        return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
     }
 }

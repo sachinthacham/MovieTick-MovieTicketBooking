@@ -10,7 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using FluentValidation;
 using MovieBooking.Application.Behaviors;
-using MediatR;
+using MovieBooking.Api.Middlewares;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,6 +26,7 @@ builder.Services.AddMediatR(typeof(RegisterUserCommand));
 // Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
 // FluentValidation
 builder.Services.AddValidatorsFromAssembly(typeof(RegisterUserCommand).Assembly);
@@ -59,6 +60,8 @@ app.UseSwagger();
 app.UseSwaggerUI();
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.MapControllers();
 

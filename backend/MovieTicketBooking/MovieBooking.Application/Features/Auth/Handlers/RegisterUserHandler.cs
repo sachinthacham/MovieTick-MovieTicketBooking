@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using BCryptNet = BCrypt.Net.BCrypt;
 using MovieBooking.Domain.Entities;
 using MovieBooking.Application.Interfaces;
 using MovieBooking.Application.Features.Auth.Commands;
@@ -17,12 +16,15 @@ public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, Guid>
 
     public async Task<Guid> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
+        var existingUser = await _userRepository.GetByEmailAsync(request.Email);
+        if (existingUser != null)
+            throw new InvalidOperationException("An account with this email already exists.");
+
         var user = new User
         {
-            Id = Guid.NewGuid(),
             FullName = request.FullName,
             Email = request.Email,
-            PasswordHash = BCryptNet.HashPassword(request.Password)
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password)
         };
 
         await _userRepository.AddAsync(user);

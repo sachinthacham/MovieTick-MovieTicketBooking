@@ -1,36 +1,66 @@
 ﻿using MediatR;
 using MovieBooking.Application.Interfaces;
 using MovieBooking.Application.Features.Auth.Commands;
+using MovieBooking.Application.DTOs.Auth;
+using MovieBooking.Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace MovieBooking.Application.Features.Auth.Handlers;
 
-public class LoginUserHandler : IRequestHandler<LoginUserCommand, string>
+public class LoginUserHandler : IRequestHandler<LoginUserCommand, AuthResponseDto>
 {
     private readonly IUserRepository _userRepository;
     private readonly IJwtService _jwtService;
+    private readonly IRefreshTokenRepository _refreshTokenRepository;
+    private readonly ILogger<LoginUserHandler> _logger;
 
-    public LoginUserHandler(IUserRepository userRepository, IJwtService jwtService)
+    public LoginUserHandler(
+        IUserRepository userRepository,
+        IJwtService jwtService,
+        IRefreshTokenRepository refreshTokenRepository,
+        ILogger<LoginUserHandler> logger)
     {
         _userRepository = userRepository;
         _jwtService = jwtService;
+        _refreshTokenRepository = refreshTokenRepository;
+        _logger = logger;
     }
 
-    public async Task<string> Handle(LoginUserCommand request, CancellationToken cancellationToken)
+    public async Task<AuthResponseDto> Handle(LoginUserCommand request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Login attempt for {Email}", request.Email);
+
         var user = await _userRepository.GetByEmailAsync(request.Email);
 
         if (user == null)
-            throw new Exception("Invalid credentials");
+        {
+            _logger.LogWarning("Login failed. User not found for {Email}", request.Email);
+            throw new UnauthorizedAccessException("Invalid credentials");
+        }
 
-        // ✅ VERIFY PASSWORD
-        bool isValid = BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
+        if (string.IsNullOrEmpty(user.PasswordHash) || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+        {
+            _logger.LogWarning("Invalid password attempt for {Email}", request.Email);
+            throw new UnauthorizedAccessException("Invalid credentials");
+        }
 
-        if (!isValid)
-            throw new Exception("Invalid credentials");
+        _logger.LogInformation("User {Email} authenticated successfully", request.Email);
 
-        // ✅ GENERATE JWT
-        var token = _jwtService.GenerateToken(user.Id, user.Email);
+        var accessToken = _jwtService.GenerateToken(user.Id, user.Email, user.Role);
 
-        return token;
+        var refreshToken = new RefreshToken
+        {
+            UserId = user.Id,
+            Token = _jwtService.GenerateRefreshToken(),
+            ExpiryDate = DateTime.UtcNow.AddDays(7)
+        };
+
+        await _refreshTokenRepository.AddAsync(refreshToken);
+
+        return new AuthResponseDto
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken.Token
+        };
     }
 }

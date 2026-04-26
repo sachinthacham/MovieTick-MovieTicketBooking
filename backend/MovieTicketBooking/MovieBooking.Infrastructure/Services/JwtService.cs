@@ -16,7 +16,8 @@ public class JwtService : IJwtService
 
     public JwtService(IConfiguration configuration)
     {
-        _key = configuration["Jwt:Key"];
+        _key = configuration["Jwt:Key"]
+            ?? throw new InvalidOperationException("JWT Key is not configured in appsettings.");
     }
 
     public string GenerateToken(Guid userId, string email, string role)

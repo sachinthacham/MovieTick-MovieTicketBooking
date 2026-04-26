@@ -34,28 +34,28 @@
 
 @layer base {
   :root {
-    /* Light Mode */
-    --background: #ffffff;
-    --foreground: #171717;
-    
-    --primary: #171717;
+    /* Light Mode - soft professional palette */
+    --background: #f7f9fc;
+    --foreground: #0f172a;
+
+    --primary: #4f46e5;
     --primary-foreground: #ffffff;
-    
-    --secondary: #f4f4f5;
-    --secondary-foreground: #18181b;
-    
-    --muted: #f4f4f5;
-    --muted-foreground: #71717a;
-    
-    --accent: #f4f4f5;
-    --accent-foreground: #18181b;
-    
-    --destructive: #ef4444;
+
+    --secondary: #e0e7ff;
+    --secondary-foreground: #312e81;
+
+    --muted: #eef2ff;
+    --muted-foreground: #475569;
+
+    --accent: #cffafe;
+    --accent-foreground: #0f172a;
+
+    --destructive: #dc2626;
     --destructive-foreground: #ffffff;
-    
-    --border: #e4e4e7;
-    --input: #e4e4e7;
-    --ring: #18181b;
+
+    --border: #dbe3f2;
+    --input: #cbd5e1;
+    --ring: #6366f1;
     
     --radius: 0.5rem;
   }
@@ -63,47 +63,47 @@
   /* Dark mode preferred by user */
   @media (prefers-color-scheme: dark) {
     :root {
-      --background: #09090b;
-      --foreground: #fafafa;
-      
-      --primary: #fafafa;
-      --primary-foreground: #09090b;
-      
-      --secondary: #27272a;
-      --secondary-foreground: #fafafa;
-      
-      --muted: #27272a;
-      --muted-foreground: #a1a1aa;
-      
-      --accent: #27272a;
-      --accent-foreground: #fafafa;
-      
-      --destructive: #7f1d1d;
-      --destructive-foreground: #fafafa;
-      
-      --border: #27272a;
-      --input: #27272a;
-      --ring: #d4d4d8;
+      --background: #080d1f;
+      --foreground: #e6ecff;
+
+      --primary: #7c83ff;
+      --primary-foreground: #0b1022;
+
+      --secondary: #18213d;
+      --secondary-foreground: #dbe6ff;
+
+      --muted: #121a33;
+      --muted-foreground: #9eb0d4;
+
+      --accent: #1a2b4a;
+      --accent-foreground: #cfe4ff;
+
+      --destructive: #ef4444;
+      --destructive-foreground: #ffffff;
+
+      --border: #233154;
+      --input: #1b2745;
+      --ring: #7c83ff;
     }
   }
 
   /* Force dark mode for some blocks if we want to ensure it */
   .dark {
-    --background: #09090b;
-    --foreground: #fafafa;
-    --primary: #fafafa;
-    --primary-foreground: #09090b;
-    --secondary: #27272a;
-    --secondary-foreground: #fafafa;
-    --muted: #27272a;
-    --muted-foreground: #a1a1aa;
-    --accent: #27272a;
-    --accent-foreground: #fafafa;
-    --destructive: #7f1d1d;
-    --destructive-foreground: #fafafa;
-    --border: #27272a;
-    --input: #27272a;
-    --ring: #d4d4d8;
+    --background: #080d1f;
+    --foreground: #e6ecff;
+    --primary: #7c83ff;
+    --primary-foreground: #0b1022;
+    --secondary: #18213d;
+    --secondary-foreground: #dbe6ff;
+    --muted: #121a33;
+    --muted-foreground: #9eb0d4;
+    --accent: #1a2b4a;
+    --accent-foreground: #cfe4ff;
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+    --border: #233154;
+    --input: #1b2745;
+    --ring: #7c83ff;
   }
 }
 
@@ -114,6 +114,9 @@
   body {
     background-color: var(--background);
     color: var(--foreground);
+    background-image:
+      radial-gradient(circle at 0% 0%, rgb(124 131 255 / 0.12), transparent 38%),
+      radial-gradient(circle at 100% 0%, rgb(34 211 238 / 0.1), transparent 32%);
     /* Improve font rendering */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

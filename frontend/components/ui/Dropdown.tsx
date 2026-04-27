@@ -52,14 +52,19 @@ export function DropdownMenuContent({ children, isOpen, align = "right" }: { chi
 }
 
 export function DropdownMenuItem({ children, onClick, className }: { children: React.ReactNode, onClick?: () => void, className?: string }) {
-  return (
-    <button
-      onClick={onClick}
-      className={cn("block w-full px-4 py-2 text-left text-sm text-(--foreground) hover:bg-(--muted) hover:text-(--foreground)", className)}
-    >
-      {children}
-    </button>
+  const classes = cn(
+    'block w-full px-4 py-2 text-left text-sm text-(--foreground) hover:bg-(--muted) hover:text-(--foreground)',
+    className
   )
+  // Do not wrap <Link> in <button> — invalid HTML and clicks may not navigate.
+  if (onClick) {
+    return (
+      <button type="button" onClick={onClick} className={classes}>
+        {children}
+      </button>
+    )
+  }
+  return <div className={classes}>{children}</div>
 }
 
 export function DropdownMenuSeparator() {

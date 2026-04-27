@@ -10,9 +10,10 @@ interface ModalProps {
   onClose: () => void
   children: React.ReactNode
   className?: string
+  title?: string
 }
 
-export function Modal({ isOpen, onClose, children, className }: ModalProps) {
+export function Modal({ isOpen, onClose, children, className, title }: ModalProps) {
   React.useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden"
@@ -35,10 +36,22 @@ export function Modal({ isOpen, onClose, children, className }: ModalProps) {
       />
       <div 
         className={cn(
-          "relative z-50 w-full max-w-lg scale-100 rounded-xl border border-(--border) bg-(--background) p-6 shadow-lg animate-in zoom-in-95 duration-200", 
+          "relative z-50 w-full max-w-2xl scale-100 rounded-xl border border-(--border) bg-(--background) p-6 shadow-lg animate-in zoom-in-95 duration-200", 
           className
         )}
       >
+        {title && (
+          <div className="flex items-center justify-between mb-4 pb-4 border-b border-(--border)">
+            <h2 className="text-lg font-bold">{title}</h2>
+            <button
+              onClick={onClose}
+              className="h-8 w-8 rounded-full flex items-center justify-center text-(--muted-foreground) hover:bg-(--muted) transition-colors"
+              aria-label="Close"
+            >
+              ×
+            </button>
+          </div>
+        )}
         {children}
       </div>
     </div>

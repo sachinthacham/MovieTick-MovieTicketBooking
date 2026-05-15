@@ -1,0 +1,10 @@
+namespace MovieBooking.Domain.Enums;
+
+public enum BookingStatus
+{
+    Pending,
+    Confirmed,
+    Cancelled,
+    Refunded,
+    Expired
+}

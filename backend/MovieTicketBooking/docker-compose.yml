@@ -1,0 +1,60 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# This file runs only the backend API + SQL Server (without the frontend).
+# For the full stack (DB + API + Frontend), use the docker-compose.yml at the
+# project root instead:  ../../docker-compose.yml
+# ─────────────────────────────────────────────────────────────────────────────
+
+version: "3.9"
+
+services:
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: moviebooking-db
+    environment:
+      SA_PASSWORD: "YourStrong@Pass123"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Express"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'YourStrong@Pass123' -Q 'SELECT 1' -No || /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'YourStrong@Pass123' -Q 'SELECT 1'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  moviebooking-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: moviebooking-api
+    ports:
+      - "5000:8080"
+    env_file:
+      - ./MovieBooking.Api/.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=MovieBookingDB;User Id=sa;Password=YourStrong@Pass123;TrustServerCertificate=True
+      - Jwt__Key=MY_SUPER_SECURE_MOVIE_BOOKING_APP_SECRET_KEY_2026
+      - Frontend__BaseUrl=http://localhost:3000
+      - Booking__LockDurationMinutes=10
+      - Booking__ExpiryMinutes=15
+    volumes:
+      - api_uploads:/app/wwwroot/uploads
+      - api_logs:/app/logs
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    restart: on-failure
+
+volumes:
+  sqlserver_data:
+  api_uploads:
+  api_logs:

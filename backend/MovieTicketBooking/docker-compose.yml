@@ -1,9 +1,3 @@
-# ─────────────────────────────────────────────────────────────────────────────
-# This file runs only the backend API + SQL Server (without the frontend).
-# For the full stack (DB + API + Frontend), use the docker-compose.yml at the
-# project root instead:  ../../docker-compose.yml
-# ─────────────────────────────────────────────────────────────────────────────
-
 version: "3.9"
 
 services:

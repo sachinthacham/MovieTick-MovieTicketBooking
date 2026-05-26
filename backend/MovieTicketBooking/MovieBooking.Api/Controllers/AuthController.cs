@@ -40,13 +40,6 @@ public class AuthController : ControllerBase
         return Ok(ApiResponse<AuthResponseDto>.SuccessResponse(response, "Login successful."));
     }
 
-    [HttpPost("refresh-token")]
-    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenDto dto)
-    {
-        var command = new RefreshTokenCommand(dto.RefreshToken);
-        var response = await _mediator.Send(command);
-        return Ok(ApiResponse<AuthResponseDto>.SuccessResponse(response, "Token refreshed."));
-    }
 
     [HttpPost("request-password-reset")]
     public async Task<IActionResult> RequestPasswordReset([FromBody] RequestPasswordResetDto dto)
@@ -56,12 +49,32 @@ public class AuthController : ControllerBase
         return Ok(ApiResponse<PasswordResetResponseDto>.SuccessResponse(response, "Password reset token generated."));
     }
 
+    
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenDto dto)
+    {
+        var command = new RefreshTokenCommand(dto.RefreshToken);
+        var response = await _mediator.Send(command);
+        return Ok(ApiResponse<AuthResponseDto>.SuccessResponse(response, "Token refreshed."));
+    }
+
     [HttpPost("reset-password")]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
     {
         var command = new ResetPasswordCommand(dto.Email, dto.Token, dto.NewPassword);
         await _mediator.Send(command);
         return Ok(ApiResponse<bool>.SuccessResponse(true, "Password reset successfully."));
+    }
+
+   
+
+    [Authorize]
+    [HttpGet("profile")]
+    public async Task<IActionResult> GetProfile()
+    {
+        var userId = GetCurrentUserId();
+        var profile = await _mediator.Send(new GetUserProfileQuery(userId));
+        return Ok(ApiResponse<UserProfileDto>.SuccessResponse(profile));
     }
 
     [Authorize]
@@ -74,14 +87,6 @@ public class AuthController : ControllerBase
         return Ok(ApiResponse<bool>.SuccessResponse(true, "Password changed successfully."));
     }
 
-    [Authorize]
-    [HttpGet("profile")]
-    public async Task<IActionResult> GetProfile()
-    {
-        var userId = GetCurrentUserId();
-        var profile = await _mediator.Send(new GetUserProfileQuery(userId));
-        return Ok(ApiResponse<UserProfileDto>.SuccessResponse(profile));
-    }
 
     [Authorize]
     [HttpPut("profile")]

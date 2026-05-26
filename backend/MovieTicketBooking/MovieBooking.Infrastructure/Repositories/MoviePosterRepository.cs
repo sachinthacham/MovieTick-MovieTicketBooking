@@ -23,21 +23,22 @@ public class MoviePosterRepository : IMoviePosterRepository
     public async Task<MoviePoster?> GetByIdAsync(Guid id)
         => await _context.MoviePosters.FindAsync(id);
 
-    public async Task<List<MoviePoster>> GetByMovieAsync(Guid movieId)
-        => await _context.MoviePosters.Where(p => p.MovieId == movieId).ToListAsync();
-
     public async Task UpdateAsync(MoviePoster poster)
     {
         _context.MoviePosters.Update(poster);
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(MoviePoster poster)
+     public async Task DeleteAsync(MoviePoster poster)
     {
         _context.MoviePosters.Remove(poster);
         await _context.SaveChangesAsync();
     }
 
+    public async Task<List<MoviePoster>> GetByMovieAsync(Guid movieId)
+        => await _context.MoviePosters.Where(p => p.MovieId == movieId).ToListAsync();
+
+    
     public async Task ClearPrimaryAsync(Guid movieId)
     {
         var posters = await _context.MoviePosters.Where(p => p.MovieId == movieId && p.IsPrimary).ToListAsync();

@@ -1,4 +1,4 @@
-# 🎬 CinePass - Enterprise Movie Ticket Booking System
+# 🎬 MovieTick - Enterprise Movie Ticket Booking System
 
 [![Next.js](https://img.shields.io/badge/Frontend-Next.js%2015%2F16-black?style=for-the-badge&logo=nextdotjs)](https://nextjs.org/)
 [![ASP.NET Core](https://img.shields.io/badge/Backend-ASP.NET%20Core%208.0-blueviolet?style=for-the-badge&logo=dotnet)](https://dotnet.microsoft.com/)
